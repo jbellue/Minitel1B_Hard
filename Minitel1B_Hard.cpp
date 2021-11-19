@@ -435,6 +435,17 @@ void Minitel::println(String chaine) {
 }
 /*--------------------------------------------------------------------*/
 
+size_t Minitel::printRaw(const char* buffer) {
+  uint8_t index = 0;
+  char cursor = buffer[index];
+  while(cursor) {
+      writeByte(cursor);
+      cursor = buffer[++index];
+  }
+  return index;
+}
+/*--------------------------------------------------------------------*/
+
 void Minitel::println() {
   if (currentSize == DOUBLE_HAUTEUR || currentSize == DOUBLE_GRANDEUR) {
     moveCursorReturn(2);
