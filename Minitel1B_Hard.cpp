@@ -478,7 +478,7 @@ void Minitel::printDiacriticChar(unsigned char caractere) {
   // Dans une chaine de caractères, un caractère diacritique prend la
   // place de 2 caractères simples, ce qui explique le /2.
   int index = (diacritics.indexOf(caractere)-1)/2;
-  char car;
+  char car = ' ';
   switch (index) {
     case( 0): car = 'a'; writeByte(ACCENT_GRAVE); break;
     case( 1): car = 'a'; writeByte(ACCENT_CIRCONFLEXE); break;
@@ -617,10 +617,11 @@ unsigned long Minitel::getKeyCode() {  // Code ASCII en général
   }
   // Séquences de deux ou trois codes (voir p.118)
   if (code == 0x19) {  // SS2
-    while (!mySerial.available()>0);  // Indispensable
+    while (!mySerial.available());  // Indispensable
     code = (code << 8) + readByte();
     // Les diacritiques (3 codes)
     if ((code == 0x1941) || (code == 0x1942) || (code == 0x1943) || (code == 0x1948) || (code == 0x194B)) {  // Accents, tréma, cédille
+      while (!mySerial.available());  // Indispensable
       byte caractere = readByte();
       code = (code << 8) + caractere;
       switch (code) {  // On convertit le code reçu en un code Extended ASCII Table (Windows-1252)
@@ -656,7 +657,7 @@ unsigned long Minitel::getKeyCode() {  // Code ASCII en général
   }
   // Touches de fonction (voir p.123)
   else if (code == 0x13) {
-    while (!mySerial.available()>0);  // Indispensable
+    while (!mySerial.available());  // Indispensable
     code = (code << 8) + readByte();
   }
   // Touches de gestion du curseur lorsque le clavier est en mode étendu (voir p.124)
@@ -668,10 +669,10 @@ unsigned long Minitel::getKeyCode() {  // Code ASCII en général
     if (mySerial.available()>0) {
       code = (code << 8) + readByte();
       if (code == 0x1B5B) {
-        while (!mySerial.available()>0);  // Indispensable
+        while (!mySerial.available());  // Indispensable
         code = (code << 8) + readByte();
         if ((code == 0x1B5B34) || (code == 0x1B5B32)) {
-          while (!mySerial.available()>0);  // Indispensable
+          while (!mySerial.available());  // Indispensable
           code = (code << 8) + readByte();
         }
       }
@@ -787,7 +788,7 @@ byte Minitel::reset() {  // Voir p.145
   writeBytesPRO(1);  // 0x1B 0x39
   writeByte(RESET);  // 0x7F
   // Acquittement
-  workingStandard(0x135E);  // SEP (0x13), 0x5E
+  return workingStandard(0x135E);  // SEP (0x13), 0x5E
 }
 /*--------------------------------------------------------------------*/
 
@@ -803,19 +804,13 @@ byte Minitel::reset() {  // Voir p.145
 boolean Minitel::isValidChar(byte index) {
   // On vérifie que le caractère appartient au jeu G0 (voir p.100).
   // SP (0x20) correspond à un espace et DEL (0x7F) à un pavé plein.
-  if (index >= SP && index <= DEL) {
-    return true;
-  }
-  return false;
+  return (index >= SP && index <= DEL);
 }
 /*--------------------------------------------------------------------*/
 
 boolean Minitel::isDiacritic(unsigned char caractere) {
   String diacritics = "àâäèéêëîïôöùûüçÀÂÄÈÉÊËÎÏÔÖÙÛÜÇ";
-  if (diacritics.indexOf(caractere) >= 0) {
-    return true; 
-  }
-  return false;
+  return (diacritics.indexOf(caractere) >= 0);
 }
 /*--------------------------------------------------------------------*/
 
@@ -914,7 +909,7 @@ byte Minitel::workingKeyboard() {  // Voir p.142
       //Serial.println(trame, HEX);
     }
   }
-  while (!mySerial.available()>0);  // Indispensable
+  while (!mySerial.available());  // Indispensable
   return readByte(); // Octet de statut fonctionnement clavier
 }
 /*--------------------------------------------------------------------*/
@@ -938,7 +933,7 @@ byte Minitel::workingAiguillage(byte module) {  // Voir p.136
       //Serial.println(trame, HEX);
     }
   }
-  while (!mySerial.available()>0);  // Indispensable
+  while (!mySerial.available());  // Indispensable
   return readByte(); // Octet de statut associé à un module
 }
 /*--------------------------------------------------------------------*/
