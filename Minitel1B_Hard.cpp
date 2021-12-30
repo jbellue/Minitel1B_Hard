@@ -443,10 +443,10 @@ void Minitel::println(String chaine) {
 }
 /*--------------------------------------------------------------------*/
 
-size_t Minitel::printRaw(const char* buffer) {
-  uint8_t index = 0;
+size_t Minitel::printRaw(const char* buffer, const int size) {
+  int index = 0;
   char cursor = buffer[index];
-  while(cursor) {
+  while(cursor && index <= size) {
       writeByte(cursor);
       cursor = buffer[++index];
   }
@@ -737,6 +737,7 @@ byte Minitel::echo(boolean commande) {  // Voir p.81, p.135 et p.156
   // Fonction modifiée par iodeo sur GitHub en octobre 2021
   // commande peut prendre comme valeur :
   // true, false
+  // return aiguillage(commande, CODE_EMISSION_CLAVIER, CODE_RECEPTION_MODEM);
   return aiguillage(commande, CODE_EMISSION_MODEM, CODE_RECEPTION_ECRAN);
 }
 /*--------------------------------------------------------------------*/
