@@ -445,10 +445,8 @@ void Minitel::println(String chaine) {
 
 size_t Minitel::printRaw(const char* buffer, const int size) {
   int index = 0;
-  char cursor = buffer[index];
-  while(cursor && index <= size) {
-      writeByte(cursor);
-      cursor = buffer[++index];
+  while (index < size) {
+    writeByte(buffer[index++]);
   }
   return index;
 }
